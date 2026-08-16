@@ -34,7 +34,7 @@ npm install @ojang/vanilla-lootdata @minecraft/server
 ### Block loot
 
 ```ts
-import { getBlockLoot, world } from "@minecraft/server"; // + the lib
+import { getBlockLoot, world, EntityComponentTypes, EquipmentSlot, } from "@minecraft/server"; // + the lib
 import { getLoot } from "@ojang/vanilla-lootdata";
 
 world.afterEvents.playerBreakBlock.subscribe((event) => {
@@ -43,8 +43,7 @@ world.afterEvents.playerBreakBlock.subscribe((event) => {
     type: "block",
     origin: block,
     useItem: player
-      .getComponent("minecraft:inventory")!
-      .container!.getItem(player.selectedSlotIndex)!,
+      .getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Mainhand);
     isSurvival: player.getGameMode() === "Survival",
     flags: { lootOrb: true },
   });
@@ -63,12 +62,12 @@ world.afterEvents.playerBreakBlock.subscribe((event) => {
 
 ```ts
 import { getLoot } from "@ojang/vanilla-lootdata";
-
+import { EntityComponentTypes, EquipmentSlot } from "@minecraft/server";
 world.afterEvents.entityDie.subscribe((event) => {
   const { deadEntity, damageSource } = event;
   const useItem = damageSource.damagingEntity
-    ?.getComponent("minecraft:inventory")
-    ?.container?.getItem(0);
+    .getComponent(EntityComponentTypes.Equippable)
+    ?.getEquipment(EquipmentSlot.Mainhand);
 
   const result = getLoot({
     type: "entity",
