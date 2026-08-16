@@ -1,5 +1,5 @@
 {
-  "name": "@ojaang/vanilla-lootdata",
+  "name": "@ojang/vanilla-lootdata",
   "version": "0.0.1",
   "description": "Minecraft Vanilla LootTable Loot for SAPI",
   "main": "dist/index.js",
