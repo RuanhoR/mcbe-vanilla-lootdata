@@ -8,6 +8,7 @@ export default [
     plugins: [dts()],
     input: "./src/index.ts",
     platform: "node",
+    external: ["@minecraft/server"],
     output: [
       {
         entryFileNames: "[name].js",

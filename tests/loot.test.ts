@@ -15,12 +15,21 @@ vi.mock("@minecraft/server", () => {
     hasEnchantment(type: string | { id: string }) {
       return this.getEnchantment(type) !== undefined;
     }
-    addEnchantment(enchantment: { type: string | { id: string }; level: number }) {
-      const id = typeof enchantment.type === "string" ? enchantment.type : enchantment.type.id;
+    addEnchantment(enchantment: {
+      type: string | { id: string };
+      level: number;
+    }) {
+      const id =
+        typeof enchantment.type === "string"
+          ? enchantment.type
+          : enchantment.type.id;
       this.#ench.set(id, enchantment.level);
     }
     getEnchantments() {
-      return [...this.#ench].map(([id, level]) => ({ type: new MockEnchantmentType(id), level }));
+      return [...this.#ench].map(([id, level]) => ({
+        type: new MockEnchantmentType(id),
+        level,
+      }));
     }
   }
   class MockEnchantmentType {
@@ -81,7 +90,7 @@ vi.mock("@minecraft/server", () => {
   };
 });
 
-import { Entity, ItemStack } from "@minecraft/server";
+import { EnchantmentType, Entity, ItemStack } from "@minecraft/server";
 import {
   getBlockLoot,
   getEntityLoot,
@@ -98,11 +107,9 @@ import {
 
 function tool(id: string, enchants: Record<string, number> = {}): ItemStack {
   const stack = new ItemStack(id);
-  const ench = stack.getComponent("minecraft:enchantable") as {
-    addEnchantment(e: { type: string; level: number }): void;
-  };
+  const ench = stack.getComponent("minecraft:enchantable");
   for (const [name, level] of Object.entries(enchants)) {
-    ench.addEnchantment({ type: name, level });
+    ench?.addEnchantment({ type: new EnchantmentType(name), level });
   }
   return stack;
 }
@@ -118,19 +125,31 @@ describe("getBlockLoot", () => {
   });
 
   it("drops itself by default", () => {
-    const res = getBlockLoot({ ...blockOpts, origin: "oak_planks", useItem: tool("minecraft:iron_axe") });
+    const res = getBlockLoot({
+      ...blockOpts,
+      origin: "oak_planks",
+      useItem: tool("minecraft:iron_axe"),
+    });
     expect(res.items).toHaveLength(1);
     expect(res.items[0].typeId).toBe("minecraft:oak_planks");
     expect(res.items[0].amount).toBe(1);
   });
 
   it("accepts a namespaced id origin", () => {
-    const res = getBlockLoot({ ...blockOpts, origin: "minecraft:oak_planks", useItem: tool("minecraft:iron_axe") });
+    const res = getBlockLoot({
+      ...blockOpts,
+      origin: "minecraft:oak_planks",
+      useItem: tool("minecraft:iron_axe"),
+    });
     expect(res.items[0].typeId).toBe("minecraft:oak_planks");
   });
 
   it("stone drops cobblestone without silk touch", () => {
-    const res = getBlockLoot({ ...blockOpts, origin: "stone", useItem: tool("minecraft:diamond_pickaxe") });
+    const res = getBlockLoot({
+      ...blockOpts,
+      origin: "stone",
+      useItem: tool("minecraft:diamond_pickaxe"),
+    });
     expect(res.items[0].typeId).toBe("minecraft:cobblestone");
   });
 
@@ -144,7 +163,11 @@ describe("getBlockLoot", () => {
   });
 
   it("glass drops nothing without silk touch, glass with silk touch", () => {
-    const plain = getBlockLoot({ ...blockOpts, origin: "glass", useItem: tool("minecraft:pickaxe") });
+    const plain = getBlockLoot({
+      ...blockOpts,
+      origin: "glass",
+      useItem: tool("minecraft:pickaxe"),
+    });
     expect(plain.items).toHaveLength(0);
 
     const silk = getBlockLoot({
@@ -156,7 +179,11 @@ describe("getBlockLoot", () => {
   });
 
   it("non-destroyable blocks drop nothing", () => {
-    const res = getBlockLoot({ ...blockOpts, origin: "bedrock", useItem: tool("minecraft:diamond_pickaxe") });
+    const res = getBlockLoot({
+      ...blockOpts,
+      origin: "bedrock",
+      useItem: tool("minecraft:diamond_pickaxe"),
+    });
     expect(res.items).toHaveLength(0);
   });
 
@@ -194,13 +221,21 @@ describe("getBlockLoot", () => {
   });
 
   it("bookshelf always drops 3 books", () => {
-    const res = getBlockLoot({ ...blockOpts, origin: "bookshelf", useItem: tool("minecraft:iron_axe") });
+    const res = getBlockLoot({
+      ...blockOpts,
+      origin: "bookshelf",
+      useItem: tool("minecraft:iron_axe"),
+    });
     expect(res.items[0].typeId).toBe("minecraft:book");
     expect(res.items[0].amount).toBe(3);
   });
 
   it("lectern sets useCommand", () => {
-    const res = getBlockLoot({ ...blockOpts, origin: "lectern", useItem: tool("minecraft:axe") });
+    const res = getBlockLoot({
+      ...blockOpts,
+      origin: "lectern",
+      useItem: tool("minecraft:axe"),
+    });
     expect(res.useCommand).toBe(true);
   });
 });
@@ -247,7 +282,10 @@ describe("getEntityLoot", () => {
       size: 1,
       getItem: () => new ItemStack("minecraft:diamond", 1),
     };
-    const MockEntityCtor = Entity as unknown as new (typeId: string, container: unknown) => InstanceType<typeof Entity>;
+    const MockEntityCtor = Entity as unknown as new (
+      typeId: string,
+      container: unknown,
+    ) => Entity;
     const donkey = new MockEntityCtor("minecraft:donkey", container);
     const res = getEntityLoot({
       type: "entity",
@@ -267,7 +305,11 @@ describe("getLoot dispatcher", () => {
   });
 
   it("dispatches to block loot", () => {
-    const res = getLoot({ ...blockOpts, origin: "stone", useItem: tool("minecraft:diamond_pickaxe") });
+    const res = getLoot({
+      ...blockOpts,
+      origin: "stone",
+      useItem: tool("minecraft:diamond_pickaxe"),
+    });
     expect(res.items[0].typeId).toBe("minecraft:cobblestone");
   });
 
@@ -288,24 +330,53 @@ describe("registryBlockData", () => {
   });
 
   it("overrides an existing block entry", () => {
-    registryBlockData({ stone: { canDestory: true, item: ["minecraft:apple", { min: 1, max: 1 }, 100] } });
-    const res = getBlockLoot({ ...blockOpts, origin: "stone", useItem: tool("minecraft:diamond_pickaxe") });
+    registryBlockData({
+      stone: {
+        canDestory: true,
+        item: ["minecraft:apple", { min: 1, max: 1 }, 100],
+      },
+    });
+    const res = getBlockLoot({
+      ...blockOpts,
+      origin: "stone",
+      useItem: tool("minecraft:diamond_pickaxe"),
+    });
     expect(res.items[0].typeId).toBe("minecraft:apple");
   });
 
   it("adds a brand new block entry", () => {
-    registryBlockData({ custom_block: { canDestory: true, item: ["minecraft:emerald", { min: 1, max: 1 }, 100] } });
-    const res = getBlockLoot({ ...blockOpts, origin: "custom_block", useItem: tool("minecraft:diamond_pickaxe") });
+    registryBlockData({
+      custom_block: {
+        canDestory: true,
+        item: ["minecraft:emerald", { min: 1, max: 1 }, 100],
+      },
+    });
+    const res = getBlockLoot({
+      ...blockOpts,
+      origin: "custom_block",
+      useItem: tool("minecraft:diamond_pickaxe"),
+    });
     expect(res.items[0].typeId).toBe("minecraft:emerald");
   });
 
   it("does not modify internalBlockData", () => {
-    expect((internalBlockData as Record<string, any>).stone.item[0]).toBe("minecraft:cobblestone");
+    expect((internalBlockData as Record<string, any>).stone.item[0]).toBe(
+      "minecraft:cobblestone",
+    );
   });
 
   it("keeps vanilla entry after overriding an unrelated id", () => {
-    registryBlockData({ other_block: { canDestory: true, item: ["minecraft:diamond", { min: 1, max: 1 }, 100] } });
-    const res = getBlockLoot({ ...blockOpts, origin: "bookshelf", useItem: tool("minecraft:iron_axe") });
+    registryBlockData({
+      other_block: {
+        canDestory: true,
+        item: ["minecraft:diamond", { min: 1, max: 1 }, 100],
+      },
+    });
+    const res = getBlockLoot({
+      ...blockOpts,
+      origin: "bookshelf",
+      useItem: tool("minecraft:iron_axe"),
+    });
     expect(res.items[0].typeId).toBe("minecraft:book");
     expect(res.items[0].amount).toBe(3);
   });
@@ -317,7 +388,9 @@ describe("registryEntityData", () => {
   });
 
   it("overrides an existing entity entry", () => {
-    registryEntityData({ zombie: { item: ["minecraft:diamond", { min: 1, max: 1 }, 100] } });
+    registryEntityData({
+      zombie: { item: ["minecraft:diamond", { min: 1, max: 1 }, 100] },
+    });
     const res = getEntityLoot({
       type: "entity",
       origin: "zombie",
@@ -328,7 +401,9 @@ describe("registryEntityData", () => {
   });
 
   it("adds a brand new entity entry", () => {
-    registryEntityData({ custom_mob: { item: ["minecraft:emerald", { min: 1, max: 1 }, 100] } });
+    registryEntityData({
+      custom_mob: { item: ["minecraft:emerald", { min: 1, max: 1 }, 100] },
+    });
     const res = getEntityLoot({
       type: "entity",
       origin: "custom_mob",
@@ -339,7 +414,9 @@ describe("registryEntityData", () => {
   });
 
   it("does not modify internalEntityData", () => {
-    expect((internalEntityData as Record<string, any>).zombie.item[0]).toBe("minecraft:rotten_flesh");
+    expect((internalEntityData as Record<string, any>).zombie.item[0]).toBe(
+      "minecraft:rotten_flesh",
+    );
   });
 });
 
