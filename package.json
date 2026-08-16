@@ -49,12 +49,6 @@
     "registry": "https://registry.npmjs.org"
   },
   "license": "MIT",
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "^11.10.0",
-      "onFail": "download"
-    }
-  },
+  "packageManager": "pnpm@11.10.0",
   "type": "module"
 }
