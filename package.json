@@ -1,6 +1,6 @@
 {
   "name": "@ojang/vanilla-lootdata",
-  "version": "0.0.1",
+  "version": "0.0.1-rc.1",
   "description": "Minecraft Vanilla LootTable Loot for SAPI",
   "main": "dist/index.js",
   "repository": {
