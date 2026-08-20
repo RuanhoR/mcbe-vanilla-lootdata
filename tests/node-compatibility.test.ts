@@ -1,10 +1,14 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   CompatibilityItemStack,
   getLoot,
   setMCBENative,
   toNative,
 } from "../src/index";
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 class FakeEnchantable {
   #ench = new Map<string, number>();
@@ -95,6 +99,7 @@ describe("library runs in pure node", () => {
   });
 
   it("compat stacks convert to native stacks via toNative", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
     const res = getLoot({
       type: "entity",
       origin: "zombie",

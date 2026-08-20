@@ -1,4 +1,5 @@
 import type { Block, Entity, ItemStack, RawMessage } from "@minecraft/server";
+import type { LootStack } from "./node-compatibility";
 
 export const enchant = [
   "protection",
@@ -118,7 +119,8 @@ export type ItemDefine =
 export interface InputOptions {
   type: "entity" | "block";
   origin: Block | Entity | string;
-  useItem: ItemStack;
+  /** Tool used to break/kill: native `ItemStack` or a {@link LootStack} compat stack. */
+  useItem: LootStack;
   isSurvival: boolean;
   flags?: {
     lootOrb?: boolean;
