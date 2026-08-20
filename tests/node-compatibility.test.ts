@@ -1,14 +1,10 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   CompatibilityItemStack,
   getLoot,
   setMCBENative,
   toNative,
 } from "../src/index";
-
-afterEach(() => {
-  vi.restoreAllMocks();
-});
 
 class FakeEnchantable {
   #ench = new Map<string, number>();
@@ -99,14 +95,13 @@ describe("library runs in pure node", () => {
   });
 
   it("compat stacks convert to native stacks via toNative", () => {
-    vi.spyOn(Math, "random").mockReturnValue(0.5);
     const res = getLoot({
       type: "entity",
-      origin: "zombie",
+      origin: "armadillo",
       useItem: new FakeItemStack("minecraft:diamond_sword") as never,
       isSurvival: true,
     });
     const native = toNative(res.items[0]) as FakeItemStack;
-    expect(native.typeId).toBe("minecraft:rotten_flesh");
+    expect(native.typeId).toBe("minecraft:armadillo_scute");
   });
 });
