@@ -1,6 +1,9 @@
 import type { EnchEnum } from "./types";
-import { getMCBENative } from "./node-compatibility";
+import { CompatibilityItemStack, getMCBENative } from "./node-compatibility";
 import { randomRange } from "./utils";
+
+/** A stack, or a plain item id string (built into a compat stack on demand). */
+export type StackInput = string | StackLike;
 
 interface StackLike {
   getComponent(id: string): unknown;
@@ -9,6 +12,10 @@ interface StackLike {
 interface EnchantableLike {
   getEnchantment(type: string | { id: string }): { level: number } | undefined;
   addEnchantment(enchantment: { type: unknown; level: number }): void;
+}
+
+function resolveStack(input: StackInput): StackLike {
+  return typeof input === "string" ? new CompatibilityItemStack(input) : input;
 }
 
 export type EnchantDefine = {
@@ -29,8 +36,8 @@ export function getLootEnchantDrop(level: number): number {
 /**
  * Get the level of an enchantment on an item stack.
  */
-export function getEnchLevel(stack: StackLike, type: string): number {
-  const ench = stack.getComponent("minecraft:enchantable") as
+export function getEnchLevel(stack: StackInput, type: string): number {
+  const ench = resolveStack(stack).getComponent("minecraft:enchantable") as
     | EnchantableLike
     | undefined;
   if (!ench) return 0;
@@ -44,7 +51,7 @@ export function getEnchLevel(stack: StackLike, type: string): number {
 /**
  * Check whether the item stack has the given enchantment.
  */
-export function hasEnchant(stack: StackLike, type: string): boolean {
+export function hasEnchant(stack: StackInput, type: string): boolean {
   return getEnchLevel(stack, type) > 0;
 }
 
@@ -52,8 +59,8 @@ export function hasEnchant(stack: StackLike, type: string): boolean {
  * Apply enchantments to an item stack. Uses a native `EnchantmentType` when one
  * has been registered via `setMCBENative`; otherwise passes plain string ids.
  */
-export function applyEnchants(stack: StackLike, enchants: EnchantDefine[]): void {
-  const ench = stack.getComponent("minecraft:enchantable") as
+export function applyEnchants(stack: StackInput, enchants: EnchantDefine[]): void {
+  const ench = resolveStack(stack).getComponent("minecraft:enchantable") as
     | EnchantableLike
     | undefined;
   if (!ench) return;

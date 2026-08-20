@@ -119,8 +119,8 @@ export type ItemDefine =
 export interface InputOptions {
   type: "entity" | "block";
   origin: Block | Entity | string;
-  /** Tool used to break/kill: native `ItemStack` or a {@link LootStack} compat stack. */
-  useItem: LootStack;
+  /** Tool used to break/kill: native `ItemStack`, a {@link LootStack} compat stack, or a plain item id string. */
+  useItem: string | LootStack;
   isSurvival: boolean;
   flags?: {
     lootOrb?: boolean;

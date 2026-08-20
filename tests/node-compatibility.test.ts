@@ -104,4 +104,24 @@ describe("library runs in pure node", () => {
     const native = toNative(res.items[0]) as FakeItemStack;
     expect(native.typeId).toBe("minecraft:armadillo_scute");
   });
+
+  it("accepts a plain string useItem", () => {
+    const res = getLoot({
+      type: "block",
+      origin: "acacia_button",
+      useItem: "minecraft:diamond_pickaxe",
+      isSurvival: true,
+    });
+    expect(res.items[0].typeId).toBe("minecraft:acacia_button");
+  });
+
+  it("accepts a native ItemStack as useItem", () => {
+    const res = getLoot({
+      type: "block",
+      origin: "stone",
+      useItem: new FakeItemStack("minecraft:diamond_pickaxe") as never,
+      isSurvival: true,
+    });
+    expect(res.items[0].typeId).toBe("minecraft:cobblestone");
+  });
 });
