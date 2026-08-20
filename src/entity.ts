@@ -1,10 +1,20 @@
-import { Entity, ItemStack } from "@minecraft/server";
 import { getEntityData } from "./shared/data/latest-entity";
 import { getEnchLevel, getLootEnchantDrop } from "./shared/ench";
 import { createItem } from "./shared/item";
+import type { LootStack } from "./shared/node-compatibility";
 import type { InputOptions } from "./shared/types";
 import { randomRange, rollWeight, normalizeTypeId } from "./shared/utils";
+import type { Entity } from "@minecraft/server";
 import type { LootReturn } from "./block";
+
+function isEntity(origin: unknown): origin is Entity {
+  return (
+    typeof origin === "object" &&
+    origin !== null &&
+    typeof (origin as { getComponent?: unknown }).getComponent === "function" &&
+    typeof (origin as { typeId?: unknown }).typeId === "string"
+  );
+}
 
 /**
  * Compute the vanilla loot of a killed entity.
@@ -33,7 +43,7 @@ export function getEntityLoot(options: InputOptions): LootReturn {
     }
   }
 
-  if (data.lootConatiner && options.origin instanceof Entity) {
+  if (data.lootConatiner && isEntity(options.origin)) {
     const container = options.origin.getComponent("minecraft:inventory")?.container;
     if (container) {
       for (let i = 0; i < container.size; i++) {

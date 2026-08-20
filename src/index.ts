@@ -6,6 +6,7 @@ export * from "./shared/types";
 export * from "./shared/ench";
 export * from "./shared/utils";
 export * from "./shared/item";
+export * from "./shared/node-compatibility";
 export * from "./block";
 export * from "./entity";
 export { internalBlockData, getBlockData, registryBlockData } from "./shared/data/latest-block";

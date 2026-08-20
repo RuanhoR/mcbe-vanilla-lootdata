@@ -1,4 +1,4 @@
-import { Block, Entity, ItemStack, RawMessage } from "@minecraft/server";
+import type { Block, Entity, ItemStack, RawMessage } from "@minecraft/server";
 
 export const enchant = [
   "protection",

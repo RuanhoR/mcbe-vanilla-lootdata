@@ -1,15 +1,21 @@
-import { ItemStack } from "@minecraft/server";
 import type { ItemDefine } from "./types";
 import { applyEnchants } from "./ench";
+import { CompatibilityItemStack } from "./node-compatibility";
 
 /**
- * Create an ItemStack from an ItemDefine.
+ * Create a {@link CompatibilityItemStack} from an ItemDefine.
  * - `string`: plain item id.
  * - object: `{ id, ench, functions? }` — applies enchants and calls `functions.setLore`
  *   with the stack's current lore so the consumer can customize it via closure.
+ *
+ * Works in Node; convert to a real `@minecraft/server` stack with `toNative()`
+ * (after calling `setMCBENative`).
  */
-export function createItem(def: ItemDefine, count: number): ItemStack {
-  const stack = typeof def === "string" ? new ItemStack(def, count) : new ItemStack(def.id, count);
+export function createItem(def: ItemDefine, count: number): CompatibilityItemStack {
+  const stack = new CompatibilityItemStack(
+    typeof def === "string" ? def : def.id,
+    count,
+  );
   if (typeof def !== "string") {
     applyEnchants(stack, def.ench);
     if (def.functions?.setLore) {
