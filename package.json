@@ -15,7 +15,8 @@
   "scripts": {
     "test": "vitest run",
     "build": "rolldown -c",
-    "check": "pnpm tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "check": "pnpm type-check"
   },
   "files": [
     "dist",

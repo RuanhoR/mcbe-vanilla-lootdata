@@ -5,7 +5,7 @@ Minecraft Bedrock SAPI library (`@ojang/vanilla-lootdata`) that reproduces vanil
 ## Commands
 
 ```sh
-pnpm check   # tsc --noEmit — only checks src/**/*.ts (tests are NOT typechecked)
+pnpm type-check   # tsc --noEmit — only checks src/**/*.ts (tests are NOT typechecked)
 pnpm test    # vitest run
 pnpm build   # rolldown -c → minified ESM to dist/, @minecraft/server externalized
 ```
@@ -16,8 +16,8 @@ CI (`pnpm/action-setup`, Node 24) runs: check → test → build. `pnpm build` m
 
 - **Do not "fix" misspelled API names.** `canDestory`, `lootConatiner`, `HandleUseCommand`, `UseEnchLooting` are intentional public API; renaming breaks consumers and tests assert on them.
 - Tests mock `@minecraft/server` entirely via `vi.mock` in `tests/loot.test.ts` (mocked `ItemStack`, `EnchantmentType`, `Entity`). You cannot import real Bedrock API at test time.
-- `pnpm check` uses `tsconfig.json` which includes only `./src/**/*.ts`. Test files are verified by vitest alone — fix type errors in tests yourself.
-- `@minecraft/server` is a peer dependency (auto-installed by pnpm); `tsc` needs it present to typecheck `src/`.
+- `pnpm type-check` uses `tsconfig.json` which includes only `./src/**/*.ts`. Test files are verified by vitest alone — fix type errors in tests yourself.
+- `@minecraft/server` is a peer dependency (auto-installed by pnpm); `tsc` (run via `pnpm type-check`, never directly) needs it present to check `src/`.
 
 ## Data architecture
 
