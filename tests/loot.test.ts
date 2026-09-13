@@ -92,6 +92,7 @@ vi.mock("@minecraft/server", () => {
 
 import { EnchantmentType, Entity, ItemStack } from "@minecraft/server";
 import {
+  assertCustomId,
   getBlockLoot,
   getEntityLoot,
   getLoot,
@@ -103,6 +104,7 @@ import {
   registryBlockData,
   registryEntityData,
   rollWeight,
+  toNamespacedId,
 } from "../src/index";
 
 function tool(id: string, enchants: Record<string, number> = {}): ItemStack {
@@ -329,45 +331,59 @@ describe("registryBlockData", () => {
     vi.spyOn(Math, "random").mockReturnValue(0.5);
   });
 
-  it("overrides an existing block entry", () => {
+  it("adds a namespaced custom block entry", () => {
     registryBlockData({
-      stone: {
-        canDestory: true,
-        item: ["minecraft:apple", { min: 1, max: 1 }, 100],
-      },
-    });
-    const res = getBlockLoot({
-      ...blockOpts,
-      origin: "stone",
-      useItem: tool("minecraft:diamond_pickaxe"),
-    });
-    expect(res.items[0].typeId).toBe("minecraft:apple");
-  });
-
-  it("adds a brand new block entry", () => {
-    registryBlockData({
-      custom_block: {
+      "myaddon:custom_block": {
         canDestory: true,
         item: ["minecraft:emerald", { min: 1, max: 1 }, 100],
       },
     });
     const res = getBlockLoot({
       ...blockOpts,
-      origin: "custom_block",
+      origin: "myaddon:custom_block",
       useItem: tool("minecraft:diamond_pickaxe"),
     });
     expect(res.items[0].typeId).toBe("minecraft:emerald");
   });
 
+  it("rejects minecraft:-namespaced keys", () => {
+    expect(() =>
+      registryBlockData({
+        "minecraft:stone": {
+          canDestory: true,
+          item: ["minecraft:apple", { min: 1, max: 1 }, 100],
+        },
+      }),
+    ).toThrow(/reserved/);
+  });
+
+  it("rejects keys that do not match [a-z0-9_]+:[a-z0-9_]+", () => {
+    expect(() =>
+      registryBlockData({
+        stone: { canDestory: true, item: ["minecraft:apple", { min: 1, max: 1 }, 100] },
+      }),
+    ).toThrow(/Invalid registry id/);
+    expect(() =>
+      registryBlockData({
+        "MyAddon:block": { canDestory: true, item: ["minecraft:apple", { min: 1, max: 1 }, 100] },
+      }),
+    ).toThrow(/Invalid registry id/);
+    expect(() =>
+      registryBlockData({
+        "myaddon:red!block": { canDestory: true, item: ["minecraft:apple", { min: 1, max: 1 }, 100] },
+      }),
+    ).toThrow(/Invalid registry id/);
+  });
+
   it("does not modify internalBlockData", () => {
-    expect((internalBlockData as Record<string, any>).stone.item[0]).toBe(
+    expect((internalBlockData as Record<string, any>)["minecraft:stone"].item[0]).toBe(
       "minecraft:cobblestone",
     );
   });
 
-  it("keeps vanilla entry after overriding an unrelated id", () => {
+  it("keeps vanilla entry after registering an unrelated id", () => {
     registryBlockData({
-      other_block: {
+      "myaddon:other_block": {
         canDestory: true,
         item: ["minecraft:diamond", { min: 1, max: 1 }, 100],
       },
@@ -387,34 +403,37 @@ describe("registryEntityData", () => {
     vi.spyOn(Math, "random").mockReturnValue(0.5);
   });
 
-  it("overrides an existing entity entry", () => {
+  it("adds a namespaced custom entity entry", () => {
     registryEntityData({
-      zombie: { item: ["minecraft:diamond", { min: 1, max: 1 }, 100] },
+      "myaddon:custom_mob": { item: ["minecraft:emerald", { min: 1, max: 1 }, 100] },
     });
     const res = getEntityLoot({
       type: "entity",
-      origin: "zombie",
-      useItem: tool("minecraft:diamond_sword"),
-      isSurvival: true,
-    });
-    expect(res.items[0].typeId).toBe("minecraft:diamond");
-  });
-
-  it("adds a brand new entity entry", () => {
-    registryEntityData({
-      custom_mob: { item: ["minecraft:emerald", { min: 1, max: 1 }, 100] },
-    });
-    const res = getEntityLoot({
-      type: "entity",
-      origin: "custom_mob",
+      origin: "myaddon:custom_mob",
       useItem: tool("minecraft:diamond_sword"),
       isSurvival: true,
     });
     expect(res.items[0].typeId).toBe("minecraft:emerald");
   });
 
+  it("rejects minecraft:-namespaced keys", () => {
+    expect(() =>
+      registryEntityData({
+        "minecraft:zombie": { item: ["minecraft:diamond", { min: 1, max: 1 }, 100] },
+      }),
+    ).toThrow(/reserved/);
+  });
+
+  it("rejects keys that do not match [a-z0-9_]+:[a-z0-9_]+", () => {
+    expect(() =>
+      registryEntityData({
+        zombie: { item: ["minecraft:diamond", { min: 1, max: 1 }, 100] },
+      }),
+    ).toThrow(/Invalid registry id/);
+  });
+
   it("does not modify internalEntityData", () => {
-    expect((internalEntityData as Record<string, any>).zombie.item[0]).toBe(
+    expect((internalEntityData as Record<string, any>)["minecraft:zombie"].item[0]).toBe(
       "minecraft:rotten_flesh",
     );
   });
@@ -453,5 +472,22 @@ describe("utils", () => {
   it("normalizeTypeId strips minecraft: prefix", () => {
     expect(normalizeTypeId("minecraft:stone")).toBe("stone");
     expect(normalizeTypeId("stone")).toBe("stone");
+  });
+
+  it("toNamespacedId defaults bare ids to minecraft:", () => {
+    expect(toNamespacedId("stone")).toBe("minecraft:stone");
+    expect(toNamespacedId("minecraft:stone")).toBe("minecraft:stone");
+    expect(toNamespacedId("myaddon:block")).toBe("myaddon:block");
+  });
+
+  it("assertCustomId enforces [a-z0-9_]+:[a-z0-9_]+ and rejects minecraft:", () => {
+    expect(() => assertCustomId("myaddon:custom_block")).not.toThrow();
+    expect(() => assertCustomId("custom_block")).toThrow(/Invalid registry id/);
+    expect(() => assertCustomId("MyAddon:block")).toThrow(/Invalid registry id/);
+    expect(() => assertCustomId("myaddon:red!block")).toThrow(/Invalid registry id/);
+    expect(() => assertCustomId(":block")).toThrow(/Invalid registry id/);
+    expect(() => assertCustomId("myaddon:")).toThrow(/Invalid registry id/);
+    expect(() => assertCustomId("minecraft:stone")).toThrow(/reserved/);
+    expect(() => assertCustomId("minecraft")).toThrow();
   });
 });

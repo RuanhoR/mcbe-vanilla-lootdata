@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { internalBlockData } from "../src/shared/data/latest-block";
-import { internalEntityData } from "../src/shared/data/latest-entity";
+import { getBlockData, internalBlockData } from "../src/shared/data/latest-block";
+import { getEntityData, internalEntityData } from "../src/shared/data/latest-entity";
 
 const B = internalBlockData as unknown as Record<string, any>;
 const E = internalEntityData as unknown as Record<string, any>;
@@ -12,6 +12,24 @@ describe("data coverage", () => {
 
   it("entity data contains 149 entries", () => {
     expect(Object.keys(internalEntityData).length).toBe(149);
+  });
+
+  it.each([internalBlockData, internalEntityData])(
+    "every key is minecraft:-prefixed",
+    (table) => {
+      for (const key of Object.keys(table as object)) {
+        expect(key).toMatch(/^minecraft:[a-z0-9_]+$/);
+      }
+    },
+  );
+
+  it("bare vanilla ids are not present but resolve through lookups", () => {
+    expect(B.stone).toBeUndefined();
+    expect(B["minecraft:stone"]).toBeDefined();
+    expect(getBlockData("stone")).toBe(B["minecraft:stone"]);
+    expect(getBlockData("minecraft:stone")).toBe(B["minecraft:stone"]);
+    expect(getEntityData("zombie")).toBe(E["minecraft:zombie"]);
+    expect(getEntityData("minecraft:zombie")).toBe(E["minecraft:zombie"]);
   });
 });
 
@@ -29,11 +47,11 @@ describe("block data values", () => {
     ["nether_gold_ore", "minecraft:gold_nugget", { min: 2, max: 6 }],
     ["deepslate_diamond_ore", "minecraft:diamond", { min: 1, max: 1 }],
   ])("%s drops %s with fortune", (id, item, count) => {
-    expect(B[id].item[0]).toBe(item);
-    expect(B[id].item[1]).toEqual(count);
-    expect(B[id].item[2]).toBe(100);
-    expect(B[id].fortune).toBe(true);
-    expect(B[id].canDestory).toBe(true);
+    expect(B[`minecraft:${id}`].item[0]).toBe(item);
+    expect(B[`minecraft:${id}`].item[1]).toEqual(count);
+    expect(B[`minecraft:${id}`].item[2]).toBe(100);
+    expect(B[`minecraft:${id}`].fortune).toBe(true);
+    expect(B[`minecraft:${id}`].canDestory).toBe(true);
   });
 
   it.each([
@@ -43,13 +61,14 @@ describe("block data values", () => {
     ["ancient_debris", { min: 3, max: 7 }],
     ["redstone_ore", { min: 0, max: 2 }],
   ])("%s has lootOrb %j", (id, orb) => {
-    expect(B[id].lootOrb).toEqual(orb);
+    expect(B[`minecraft:${id}`].lootOrb).toEqual(orb);
   });
 
   it("ancient_debris drops itself without fortune", () => {
-    expect(B.ancient_debris.item[0]).toBe("minecraft:ancient_debris");
-    expect(B.ancient_debris.item[1]).toEqual({ min: 1, max: 1 });
-    expect(B.ancient_debris.fortune).toBeUndefined();
+    const b = B["minecraft:ancient_debris"];
+    expect(b.item[0]).toBe("minecraft:ancient_debris");
+    expect(b.item[1]).toEqual({ min: 1, max: 1 });
+    expect(b.fortune).toBeUndefined();
   });
 
   it.each([
@@ -58,8 +77,8 @@ describe("block data values", () => {
     ["mycelium", "minecraft:dirt", "minecraft:mycelium"],
     ["podzol", "minecraft:dirt", "minecraft:podzol"],
   ])("%s drops %s, silk drops itself", (id, item, silk) => {
-    expect(B[id].item[0]).toBe(item);
-    expect(B[id].silkTouchLoot[0]).toBe(silk);
+    expect(B[`minecraft:${id}`].item[0]).toBe(item);
+    expect(B[`minecraft:${id}`].silkTouchLoot[0]).toBe(silk);
   });
 
   it.each([
@@ -71,8 +90,8 @@ describe("block data values", () => {
     "sculk",
     "tinted_glass",
   ])("%s requires silk touch", (id) => {
-    expect(B[id].item).toBeUndefined();
-    expect(B[id].silkTouchLoot[0]).toBe("minecraft:" + id);
+    expect(B[`minecraft:${id}`].item).toBeUndefined();
+    expect(B[`minecraft:${id}`].silkTouchLoot[0]).toBe("minecraft:" + id);
   });
 
   it.each([
@@ -80,9 +99,9 @@ describe("block data values", () => {
     ["sea_lantern", "minecraft:prismarine_crystals", { min: 1, max: 3 }],
     ["clay", "minecraft:clay_ball", { min: 4, max: 4 }],
   ])("%s drops %s plus silk self", (id, item, count) => {
-    expect(B[id].item[0]).toBe(item);
-    expect(B[id].item[1]).toEqual(count);
-    expect(B[id].silkTouchLoot[0]).toBe("minecraft:" + id);
+    expect(B[`minecraft:${id}`].item[0]).toBe(item);
+    expect(B[`minecraft:${id}`].item[1]).toEqual(count);
+    expect(B[`minecraft:${id}`].silkTouchLoot[0]).toBe("minecraft:" + id);
   });
 
   it.each([
@@ -94,9 +113,9 @@ describe("block data values", () => {
     ["potatoes", "minecraft:potato", { min: 0, max: 1 }],
     ["cocoa", "minecraft:cocoa_beans", { min: 1, max: 3 }],
   ])("%s drops %s %j", (id, item, count) => {
-    expect(B[id].item[0]).toBe(item);
-    expect(B[id].item[1]).toEqual(count);
-    expect(B[id].item[2]).toBe(100);
+    expect(B[`minecraft:${id}`].item[0]).toBe(item);
+    expect(B[`minecraft:${id}`].item[1]).toEqual(count);
+    expect(B[`minecraft:${id}`].item[2]).toBe(100);
   });
 
   it.each([
@@ -104,10 +123,10 @@ describe("block data values", () => {
     ["spruce_leaves", "minecraft:spruce_sapling"],
     ["poplar_leaves", "minecraft:poplar_sapling"],
   ])("%s drops sapling at low weight plus silk self", (id, sapling) => {
-    expect(B[id].item[0]).toBe(sapling);
-    expect(B[id].item[1]).toEqual({ min: 1, max: 1 });
-    expect(B[id].item[2]).toBe(5);
-    expect(B[id].silkTouchLoot[0]).toBe("minecraft:" + id);
+    expect(B[`minecraft:${id}`].item[0]).toBe(sapling);
+    expect(B[`minecraft:${id}`].item[1]).toEqual({ min: 1, max: 1 });
+    expect(B[`minecraft:${id}`].item[2]).toBe(5);
+    expect(B[`minecraft:${id}`].silkTouchLoot[0]).toBe("minecraft:" + id);
   });
 
   it.each([
@@ -130,11 +149,11 @@ describe("block data values", () => {
     "light_block_0",
     "light_block_15",
   ])("%s canDestory false", (id) => {
-    expect(B[id].canDestory).toBe(false);
+    expect(B[`minecraft:${id}`].canDestory).toBe(false);
   });
 
   it("lectern sets HandleUseCommand", () => {
-    expect(B.lectern.HandleUseCommand).toBe(true);
+    expect(B["minecraft:lectern"].HandleUseCommand).toBe(true);
   });
 });
 
@@ -152,29 +171,31 @@ describe("entity data values", () => {
     ["squid", "minecraft:ink_sac", { min: 1, max: 3 }],
     ["armadillo", "minecraft:armadillo_scute", { min: 1, max: 1 }],
   ])("%s drops %s with looting", (id, item, count) => {
-    expect(E[id].item[0]).toBe(item);
-    expect(E[id].item[1]).toEqual(count);
-    expect(E[id].item[2]).toBe(100);
-    expect(E[id].UseEnchLooting).toBe(true);
+    expect(E[`minecraft:${id}`].item[0]).toBe(item);
+    expect(E[`minecraft:${id}`].item[1]).toEqual(count);
+    expect(E[`minecraft:${id}`].item[2]).toBe(100);
+    expect(E[`minecraft:${id}`].UseEnchLooting).toBe(true);
   });
 
   it("wither drops nether_star", () => {
-    expect(E.wither.item[0]).toBe("minecraft:nether_star");
-    expect(E.wither.item[1]).toEqual({ min: 1, max: 1 });
+    expect(E["minecraft:wither"].item[0]).toBe("minecraft:nether_star");
+    expect(E["minecraft:wither"].item[1]).toEqual({ min: 1, max: 1 });
   });
 
   it("evocation_illager drops totem_of_undying", () => {
-    expect(E.evocation_illager.item[0]).toBe("minecraft:totem_of_undying");
+    expect(E["minecraft:evocation_illager"].item[0]).toBe(
+      "minecraft:totem_of_undying",
+    );
   });
 
   it.each(["player", "villager", "wandering_trader", "item", "xp_orb", "boat", "tnt"])(
     "%s has no loot",
     (id) => {
-      expect(E[id]).toEqual({});
+      expect(E[`minecraft:${id}`]).toEqual({});
     },
   );
 
   it.each(["donkey", "mule", "llama", "trader_llama"])("%s has lootConatiner", (id) => {
-    expect(E[id].lootConatiner).toBe(true);
+    expect(E[`minecraft:${id}`].lootConatiner).toBe(true);
   });
 });

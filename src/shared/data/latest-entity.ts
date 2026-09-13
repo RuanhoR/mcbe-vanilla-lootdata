@@ -1,323 +1,324 @@
 import type { EntityLootDataValue } from "../types";
+import { assertCustomId, toNamespacedId } from "../utils";
 
 export const internalEntityData = {
-  allay: {},
-  area_effect_cloud: {},
-  armadillo: {
+  "minecraft:allay": {},
+  "minecraft:area_effect_cloud": {},
+  "minecraft:armadillo": {
     item: ["minecraft:armadillo_scute", { min: 1, max: 1 }, 100],
     UseEnchLooting: true,
   },
-  armor_stand: {},
-  arrow: {},
-  axolotl: {},
-  bat: {},
-  bee: {},
-  black_cushion: {},
-  blaze: {
+  "minecraft:armor_stand": {},
+  "minecraft:arrow": {},
+  "minecraft:axolotl": {},
+  "minecraft:bat": {},
+  "minecraft:bee": {},
+  "minecraft:black_cushion": {},
+  "minecraft:blaze": {
     item: ["minecraft:blaze_rod", { min: 0, max: 1 }, 100],
     UseEnchLooting: true,
   },
-  blue_cushion: {},
-  boat: {},
-  bogged: {
+  "minecraft:blue_cushion": {},
+  "minecraft:boat": {},
+  "minecraft:bogged": {
     item: ["minecraft:bone", { min: 0, max: 2 }, 100],
     UseEnchLooting: true,
   },
-  breeze: {},
-  breeze_wind_charge_projectile: {},
-  brown_cushion: {},
-  camel: {},
-  camel_husk: {},
-  cat: {},
-  cave_spider: {
+  "minecraft:breeze": {},
+  "minecraft:breeze_wind_charge_projectile": {},
+  "minecraft:brown_cushion": {},
+  "minecraft:camel": {},
+  "minecraft:camel_husk": {},
+  "minecraft:cat": {},
+  "minecraft:cave_spider": {
     item: ["minecraft:string", { min: 0, max: 2 }, 100],
     UseEnchLooting: true,
   },
-  chest_boat: {},
-  chest_minecart: {},
-  chicken: {
+  "minecraft:chest_boat": {},
+  "minecraft:chest_minecart": {},
+  "minecraft:chicken": {
     item: ["minecraft:feather", { min: 0, max: 2 }, 100],
     UseEnchLooting: true,
   },
-  cod: {
+  "minecraft:cod": {
     item: ["minecraft:cod", { min: 1, max: 1 }, 100],
     UseEnchLooting: true,
   },
-  command_block_minecart: {},
-  copper_golem: {},
-  cow: {
+  "minecraft:command_block_minecart": {},
+  "minecraft:copper_golem": {},
+  "minecraft:cow": {
     item: ["minecraft:leather", { min: 0, max: 2 }, 100],
     UseEnchLooting: true,
   },
-  creaking: {},
-  creeper: {
+  "minecraft:creaking": {},
+  "minecraft:creeper": {
     item: ["minecraft:gunpowder", { min: 0, max: 2 }, 100],
     UseEnchLooting: true,
   },
-  cushion: {},
-  cyan_cushion: {},
-  dolphin: {},
-  donkey: {
+  "minecraft:cushion": {},
+  "minecraft:cyan_cushion": {},
+  "minecraft:dolphin": {},
+  "minecraft:donkey": {
     item: ["minecraft:leather", { min: 0, max: 2 }, 100],
     lootConatiner: true,
     UseEnchLooting: true,
   },
-  dragon_fireball: {},
-  drowned: {
+  "minecraft:dragon_fireball": {},
+  "minecraft:drowned": {
     item: ["minecraft:rotten_flesh", { min: 1, max: 3 }, 100],
     UseEnchLooting: true,
   },
-  egg: {},
-  elder_guardian: {
+  "minecraft:egg": {},
+  "minecraft:elder_guardian": {
     item: ["minecraft:prismarine_shard", { min: 0, max: 2 }, 100],
     UseEnchLooting: true,
   },
-  elder_guardian_ghost: {},
-  ender_crystal: {},
-  ender_dragon: {},
-  ender_pearl: {},
-  enderman: {
+  "minecraft:elder_guardian_ghost": {},
+  "minecraft:ender_crystal": {},
+  "minecraft:ender_dragon": {},
+  "minecraft:ender_pearl": {},
+  "minecraft:enderman": {
     item: ["minecraft:ender_pearl", { min: 0, max: 1 }, 100],
     UseEnchLooting: true,
   },
-  endermite: {},
-  evocation_fang: {},
-  evocation_illager: {
+  "minecraft:endermite": {},
+  "minecraft:evocation_fang": {},
+  "minecraft:evocation_illager": {
     item: ["minecraft:totem_of_undying", { min: 1, max: 1 }, 100],
   },
-  eye_of_ender_signal: {},
-  falling_block: {},
-  fireball: {},
-  fireworks_rocket: {},
-  fishing_hook: {},
-  fox: {},
-  frog: {},
-  ghast: {
+  "minecraft:eye_of_ender_signal": {},
+  "minecraft:falling_block": {},
+  "minecraft:fireball": {},
+  "minecraft:fireworks_rocket": {},
+  "minecraft:fishing_hook": {},
+  "minecraft:fox": {},
+  "minecraft:frog": {},
+  "minecraft:ghast": {
     item: ["minecraft:ghast_tear", { min: 0, max: 1 }, 100],
     UseEnchLooting: true,
   },
-  glow_squid: {
+  "minecraft:glow_squid": {
     item: ["minecraft:glow_ink_sac", { min: 1, max: 3 }, 100],
     UseEnchLooting: true,
   },
-  goat: {
+  "minecraft:goat": {
     item: ["minecraft:mutton", { min: 0, max: 2 }, 100],
     UseEnchLooting: true,
   },
-  gray_cushion: {},
-  green_cushion: {},
-  guardian: {
+  "minecraft:gray_cushion": {},
+  "minecraft:green_cushion": {},
+  "minecraft:guardian": {
     item: ["minecraft:prismarine_shard", { min: 0, max: 2 }, 100],
     UseEnchLooting: true,
   },
-  happy_ghast: {},
-  hoglin: {
+  "minecraft:happy_ghast": {},
+  "minecraft:hoglin": {
     item: ["minecraft:porkchop", { min: 1, max: 3 }, 100],
     UseEnchLooting: true,
   },
-  hopper_minecart: {},
-  horse: {
+  "minecraft:hopper_minecart": {},
+  "minecraft:horse": {
     item: ["minecraft:leather", { min: 0, max: 2 }, 100],
     UseEnchLooting: true,
   },
-  husk: {
+  "minecraft:husk": {
     item: ["minecraft:rotten_flesh", { min: 1, max: 3 }, 100],
     UseEnchLooting: true,
   },
-  iron_golem: {
+  "minecraft:iron_golem": {
     item: ["minecraft:iron_ingot", { min: 3, max: 5 }, 100],
     UseEnchLooting: true,
   },
-  item: {},
-  leash_knot: {},
-  light_blue_cushion: {},
-  light_gray_cushion: {},
-  lightning_bolt: {},
-  lime_cushion: {},
-  lingering_potion: {},
-  llama: {
+  "minecraft:item": {},
+  "minecraft:leash_knot": {},
+  "minecraft:light_blue_cushion": {},
+  "minecraft:light_gray_cushion": {},
+  "minecraft:lightning_bolt": {},
+  "minecraft:lime_cushion": {},
+  "minecraft:lingering_potion": {},
+  "minecraft:llama": {
     item: ["minecraft:leather", { min: 0, max: 2 }, 100],
     lootConatiner: true,
     UseEnchLooting: true,
   },
-  llama_spit: {},
-  magenta_cushion: {},
-  magma_cube: {
+  "minecraft:llama_spit": {},
+  "minecraft:magenta_cushion": {},
+  "minecraft:magma_cube": {
     UseEnchLooting: true,
     item: ["minecraft:magma_cream", { min: 0, max: 1 }, 100],
   },
-  minecart: {},
-  mooshroom: {
+  "minecraft:minecart": {},
+  "minecraft:mooshroom": {
     UseEnchLooting: true,
     item: ["minecraft:leather", { min: 0, max: 2 }, 100],
   },
-  mule: {
+  "minecraft:mule": {
     UseEnchLooting: true,
     lootConatiner: true,
     item: ["minecraft:leather", { min: 0, max: 2 }, 100],
   },
-  nautilus: {},
-  npc: {},
-  ocelot: {},
-  ominous_item_spawner: {},
-  orange_cushion: {},
-  painting: {},
-  panda: {
+  "minecraft:nautilus": {},
+  "minecraft:npc": {},
+  "minecraft:ocelot": {},
+  "minecraft:ominous_item_spawner": {},
+  "minecraft:orange_cushion": {},
+  "minecraft:painting": {},
+  "minecraft:panda": {
     UseEnchLooting: true,
     item: ["minecraft:bamboo", { min: 1, max: 1 }, 100],
   },
-  parched: {},
-  parrot: {
+  "minecraft:parched": {},
+  "minecraft:parrot": {
     UseEnchLooting: true,
     item: ["minecraft:feather", { min: 1, max: 2 }, 100],
   },
-  phantom: {
+  "minecraft:phantom": {
     UseEnchLooting: true,
     item: ["minecraft:phantom_membrane", { min: 0, max: 1 }, 100],
   },
-  pig: {
+  "minecraft:pig": {
     UseEnchLooting: true,
     item: ["minecraft:porkchop", { min: 0, max: 2 }, 100],
   },
-  piglin: {
+  "minecraft:piglin": {
     UseEnchLooting: true,
     item: ["minecraft:gold_nugget", { min: 2, max: 6 }, 100],
   },
-  piglin_brute: {
+  "minecraft:piglin_brute": {
     UseEnchLooting: true,
     item: ["minecraft:gold_nugget", { min: 2, max: 6 }, 100],
   },
-  pillager: {
+  "minecraft:pillager": {
     UseEnchLooting: true,
     item: ["minecraft:emerald", { min: 0, max: 1 }, 100],
   },
-  pink_cushion: {},
-  player: {},
-  polar_bear: {},
-  pufferfish: {
+  "minecraft:pink_cushion": {},
+  "minecraft:player": {},
+  "minecraft:polar_bear": {},
+  "minecraft:pufferfish": {
     UseEnchLooting: true,
     item: ["minecraft:pufferfish", { min: 1, max: 1 }, 100],
   },
-  purple_cushion: {},
-  rabbit: {
+  "minecraft:purple_cushion": {},
+  "minecraft:rabbit": {
     UseEnchLooting: true,
     item: ["minecraft:rabbit_hide", { min: 0, max: 1 }, 100],
   },
-  ravager: {},
-  red_cushion: {},
-  salmon: {
+  "minecraft:ravager": {},
+  "minecraft:red_cushion": {},
+  "minecraft:salmon": {
     UseEnchLooting: true,
     item: ["minecraft:salmon", { min: 1, max: 1 }, 100],
   },
-  sheep: {
+  "minecraft:sheep": {
     UseEnchLooting: true,
     item: ["minecraft:white_wool", { min: 1, max: 1 }, 100],
   },
-  shulker: {
+  "minecraft:shulker": {
     UseEnchLooting: true,
     item: ["minecraft:shulker_shell", { min: 0, max: 1 }, 100],
   },
-  shulker_bullet: {},
-  silverfish: {},
-  skeleton: {
+  "minecraft:shulker_bullet": {},
+  "minecraft:silverfish": {},
+  "minecraft:skeleton": {
     UseEnchLooting: true,
     item: ["minecraft:bone", { min: 0, max: 2 }, 100],
   },
-  skeleton_horse: {
+  "minecraft:skeleton_horse": {
     UseEnchLooting: true,
     item: ["minecraft:bone", { min: 0, max: 2 }, 100],
   },
-  slime: {
+  "minecraft:slime": {
     UseEnchLooting: true,
     item: ["minecraft:slime_ball", { min: 0, max: 2 }, 100],
   },
-  small_fireball: {},
-  sniffer: {},
-  snow_golem: {
+  "minecraft:small_fireball": {},
+  "minecraft:sniffer": {},
+  "minecraft:snow_golem": {
     UseEnchLooting: true,
     item: ["minecraft:snowball", { min: 0, max: 15 }, 100],
   },
-  snowball: {},
-  spider: {
+  "minecraft:snowball": {},
+  "minecraft:spider": {
     UseEnchLooting: true,
     item: ["minecraft:string", { min: 0, max: 2 }, 100],
   },
-  splash_potion: {},
-  squid: {
+  "minecraft:splash_potion": {},
+  "minecraft:squid": {
     UseEnchLooting: true,
     item: ["minecraft:ink_sac", { min: 1, max: 3 }, 100],
   },
-  stray: {
+  "minecraft:stray": {
     UseEnchLooting: true,
     item: ["minecraft:bone", { min: 0, max: 2 }, 100],
   },
-  strider: {},
-  sulfur_cube: {},
-  tadpole: {},
-  thrown_trident: {},
-  tnt: {},
-  tnt_minecart: {},
-  trader_llama: {
+  "minecraft:strider": {},
+  "minecraft:sulfur_cube": {},
+  "minecraft:tadpole": {},
+  "minecraft:thrown_trident": {},
+  "minecraft:tnt": {},
+  "minecraft:tnt_minecart": {},
+  "minecraft:trader_llama": {
     UseEnchLooting: true,
     lootConatiner: true,
     item: ["minecraft:leather", { min: 0, max: 2 }, 100],
   },
-  tropicalfish: {
+  "minecraft:tropicalfish": {
     UseEnchLooting: true,
     item: ["minecraft:tropical_fish", { min: 1, max: 1 }, 100],
   },
-  turtle: {
+  "minecraft:turtle": {
     UseEnchLooting: true,
     item: ["minecraft:scute", { min: 0, max: 1 }, 100],
   },
-  vex: {},
-  villager: {},
-  villager_v2: {},
-  vindicator: {
+  "minecraft:vex": {},
+  "minecraft:villager": {},
+  "minecraft:villager_v2": {},
+  "minecraft:vindicator": {
     UseEnchLooting: true,
     item: ["minecraft:emerald", { min: 0, max: 1 }, 100],
   },
-  wandering_trader: {},
-  warden: {},
-  white_cushion: {},
-  wind_charge_projectile: {},
-  witch: {
+  "minecraft:wandering_trader": {},
+  "minecraft:warden": {},
+  "minecraft:white_cushion": {},
+  "minecraft:wind_charge_projectile": {},
+  "minecraft:witch": {
     UseEnchLooting: true,
     item: ["minecraft:glass_bottle", { min: 0, max: 1 }, 100],
   },
-  wither: { item: ["minecraft:nether_star", { min: 1, max: 1 }, 100] },
-  wither_skeleton: {
+  "minecraft:wither": { item: ["minecraft:nether_star", { min: 1, max: 1 }, 100] },
+  "minecraft:wither_skeleton": {
     UseEnchLooting: true,
     item: ["minecraft:coal", { min: 0, max: 1 }, 100],
   },
-  wither_skull: {},
-  wither_skull_dangerous: {},
-  wolf: {},
-  xp_bottle: {},
-  xp_orb: {},
-  yellow_cushion: {},
-  zoglin: {
+  "minecraft:wither_skull": {},
+  "minecraft:wither_skull_dangerous": {},
+  "minecraft:wolf": {},
+  "minecraft:xp_bottle": {},
+  "minecraft:xp_orb": {},
+  "minecraft:yellow_cushion": {},
+  "minecraft:zoglin": {
     UseEnchLooting: true,
     item: ["minecraft:rotten_flesh", { min: 1, max: 3 }, 100],
   },
-  zombie: {
+  "minecraft:zombie": {
     UseEnchLooting: true,
     item: ["minecraft:rotten_flesh", { min: 0, max: 2 }, 100],
   },
-  zombie_horse: {
+  "minecraft:zombie_horse": {
     UseEnchLooting: true,
     item: ["minecraft:rotten_flesh", { min: 0, max: 2 }, 100],
   },
-  zombie_nautilus: {},
-  zombie_pigman: {
+  "minecraft:zombie_nautilus": {},
+  "minecraft:zombie_pigman": {
     UseEnchLooting: true,
     item: ["minecraft:rotten_flesh", { min: 0, max: 1 }, 100],
   },
-  zombie_villager: {
+  "minecraft:zombie_villager": {
     UseEnchLooting: true,
     item: ["minecraft:rotten_flesh", { min: 1, max: 3 }, 100],
   },
-  zombie_villager_v2: {
+  "minecraft:zombie_villager_v2": {
     UseEnchLooting: true,
     item: ["minecraft:rotten_flesh", { min: 1, max: 3 }, 100],
   },
@@ -330,16 +331,20 @@ const customEntityData: Record<string, EntityLootDataValue> = {};
 export function getEntityData(id: string): EntityLootDataValue | undefined {
   return (
     customEntityData[id] ??
-    (internalEntityData as Record<string, EntityLootDataValue>)[id]
+    (internalEntityData as Record<string, EntityLootDataValue>)[
+      toNamespacedId(id)
+    ]
   );
 }
 
 /**
- * Register custom entity loot data. Fully overrides an entry for the given id,
- * or adds a new one. Vanilla defaults are kept for non-registered ids.
+ * Register custom entity loot data under your own namespace (e.g.
+ * `"myaddon:custom_mob"`). Keys must match `[a-z0-9_]+:[a-z0-9_]+` and may not
+ * use the reserved `minecraft:` namespace — vanilla defaults stay intact.
  */
 export function registryEntityData(
   data: Record<string, EntityLootDataValue>,
 ): void {
+  for (const key of Object.keys(data)) assertCustomId(key);
   Object.assign(customEntityData, data);
 }

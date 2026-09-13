@@ -10,8 +10,8 @@ It works entirely in pure JavaScript/TypeScript on top of `@minecraft/server` �
 
 - Vanilla-accurate block loot: correct drops, count ranges, drop weights, XP orbs, silk-touch and fortune handling
 - Vanilla-accurate entity loot: item drops, count ranges, looting enchants, container (mob inventory) loot
-- Built-in data for 1232 blocks and 149 entities
-- Customize anything: override existing entries or add your own via `registryBlockData` / `registryEntityData`
+- Built-in data for 1232 blocks and 149 entities (all `minecraft:`-namespaced)
+- Add custom loot via `registryBlockData` / `registryEntityData` under any namespace except the reserved `minecraft:` (validated as `[a-z0-9_]+:[a-z0-9_]+`)
 - Supports enchanted drops (e.g. enchanted books / items) and item lore
 - Tiny, dependency-free runtime (peer-depends only on `@minecraft/server`)
 
@@ -83,7 +83,7 @@ world.afterEvents.entityDie.subscribe((event) => {
 });
 ```
 
-> `origin` accepts a `Block` / `Entity` instance or a plain id string. Ids may be namespaced (`"minecraft:stone"`) or not (`"stone"`).
+> `origin` accepts a `Block` / `Entity` instance or a plain id string. Vanilla ids may be namespaced (`"minecraft:stone"`) or not (`"stone"`); custom ids must use their registered namespace (e.g. `"myaddon:custom_mob"`).
 
 ## API
 
@@ -124,25 +124,30 @@ interface InputOptions {
 
 ### Customizing loot data
 
-The built-in vanilla tables are read-only (`internalBlockData` / `internalEntityData`). To override or extend them, register your own entries — registered ids fully replace the vanilla defaults, everything else keeps vanilla behavior:
+The built-in vanilla tables are read-only (`internalBlockData` / `internalEntityData`) and every key carries the `minecraft:` prefix. To add your own content, register entries under **your own namespace** — the `minecraft:` namespace is reserved and cannot be registered, so vanilla behavior is never affected. Registry keys must match `[a-z0-9_]+:[a-z0-9_]+`:
 
 ```ts
 import { registryBlockData, registryEntityData } from "@ojang/vanilla-lootdata";
 
-// Override stone to drop apples
+// Add a custom block under your addon namespace
 registryBlockData({
-  stone: {
+  "myaddon:ruby_ore": {
     canDestory: true,
-    item: ["minecraft:apple", { min: 1, max: 1 }, 100],
+    item: ["minecraft:ruby", { min: 1, max: 2 }, 100],
   },
 });
 
 // Add a custom mob
 registryEntityData({
-  custom_mob: { item: ["minecraft:emerald", { min: 1, max: 2 }, 100] },
+  "myaddon:custom_mob": { item: ["minecraft:emerald", { min: 1, max: 2 }, 100] },
 });
 
-// Also exported: getBlockData(id), getEntityData(id) to look entries up.
+registryEntityData({ "minecraft:zombie": {} }); // ❌ throws — namespace reserved
+registryEntityData({ custom_mob: {} }); // ❌ throws — must be "<namespace>:<path>"
+
+// Look up any entry (bare ids resolve against the minecraft: table):
+getBlockData("minecraft:stone");
+getBlockData("myaddon:ruby_ore"); // also exported: getEntityData(id)
 ```
 
 #### Loot item format
@@ -196,7 +201,7 @@ Entity entries (`EntityLootDataValue`):
 
 ## Notes & Limitations
 
-- The built-in data targets a recent vanilla version and may lag behind new game updates. Use `registryBlockData` / `registryEntityData` to fill gaps.
+- The built-in data targets a recent vanilla version and may lag behind new game updates. Use `registryBlockData` / `registryEntityData` to add your own content.
 - `useCommand` (lectern) indicates a block that can't be dropped via a plain `ItemStack`; handle it with a command in your own code.
 - Drop chances are simulated with `Math.random()`; results are not cryptographically random but statistically match vanilla.
 

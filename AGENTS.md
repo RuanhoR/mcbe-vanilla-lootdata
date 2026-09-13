@@ -21,8 +21,8 @@ CI (`pnpm/action-setup`, Node 24) runs: check → test → build. `pnpm build` m
 
 ## Data architecture
 
-- Vanilla tables live in `src/shared/data/latest-block.ts` (1232 entries) and `latest-entity.ts` (149 entries) as flat `{ "id": BlockLootDataValue }` maps.
-- **Id keys have no `minecraft:` prefix** (`"stone"`, `"zombie"`), but item ids inside `LootItem` tuples DO (`"minecraft:cobblestone"`). `normalizeTypeId` strips the prefix from `origin`, so both forms work at runtime.
+- Vanilla tables live in `src/shared/data/latest-block.ts` (1232 entries) and `latest-entity.ts` (149 entries) as flat `{ id: BlockLootDataValue }` maps.
+- **All internal id keys carry the `minecraft:` prefix** (`"minecraft:stone"`, `"minecraft:zombie"`), as do item ids inside `LootItem` tuples (`"minecraft:cobblestone"`). `normalizeTypeId` strips the prefix from `origin`; `toNamespacedId` re-adds it (bare ids default to `minecraft:`), so both forms work at runtime.
 - Entry format: `LootItem = [itemId | ItemDefine, { min, max? }, weight]` where weight is drop chance **0–100**.
-- `registryBlockData` / `registryEntityData` merge into separate `custom*Data` maps that take precedence over internal data. Registering an id fully overrides vanilla; internal tables are read-only (`internalBlockData` / `internalEntityData`).
-- `origin` accepts `Block | Entity | string`; entity container loot requires a real `Entity` instance (`lootConatiner`).
+- `registryBlockData` / `registryEntityData` merge into separate `custom*Data` maps that take precedence over internal data. Registry keys are validated by `assertCustomId`: they must match `[a-z0-9_]+:[a-z0-9_]+` with any namespace **except the reserved `minecraft:`**, so vanilla overrides via registry are impossible. Internal tables are read-only (`internalBlockData` / `internalEntityData`).
+- `origin` accepts `Block | Entity | string`; entity container loot requires a real `Entity` instance (`lootConatiner`). String origins may be bare (`"stone"`) or prefixed (`"minecraft:stone"`, `"myaddon:block"`).
